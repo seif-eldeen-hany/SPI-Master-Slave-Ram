@@ -1,0 +1,15 @@
+{D:/vs code/ic design/SPI Master-Slave & Ram project/spi master/master.v} {1 {vlog -work work -stats=none {D:/vs code/ic design/SPI Master-Slave & Ram project/spi master/master.v}
+Model Technology ModelSim - Intel FPGA Edition vlog 10.5b Compiler 2016.10 Oct  5 2016
+-- Compiling module master
+
+Top level modules:
+	master
+
+} {} {}} {D:/vs code/ic design/SPI Master-Slave & Ram project/spi master/master_tb.v} {1 {vlog -work work -stats=none {D:/vs code/ic design/SPI Master-Slave & Ram project/spi master/master_tb.v}
+Model Technology ModelSim - Intel FPGA Edition vlog 10.5b Compiler 2016.10 Oct  5 2016
+-- Compiling module master_tb
+
+Top level modules:
+	master_tb
+
+} {} {}}

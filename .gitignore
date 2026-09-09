@@ -1,0 +1,16 @@
+# ModelSim
+work/
+transcript
+*.wlf
+*.mpf
+*.mti
+
+# GTKWave & Verilog Simulation
+*.vcd
+*.vvp
+*.out
+
+# Vivado / Quartus (optional, if used)
+*.log
+*.jou
+*.pb

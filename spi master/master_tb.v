@@ -42,13 +42,13 @@ task reset();
     end
 endtask
 
-function [9:0] generate_tx_data(input [7:0] data, input [1:0] opcode);
+function [9:0] generate_tx_data(input [1:0] opcode,input [7:0] data);
     begin
-        generate_tx_data= {data, opcode};
+        generate_tx_data= {opcode, data};
     end
 endfunction
 
-    reg [9:0] slave_output_reg;
+    reg [7:0] slave_output_reg;
 
     initial begin
 
@@ -59,11 +59,11 @@ endfunction
         clk=0;
         tx_data=0;
         MISO=0;
-        slave_output_reg=10'b1_101_011_010;
+        slave_output_reg=8'b00110011;
 
         reset();
         #(clk_period*2);
-        tx_data= generate_tx_data(8'b10_101_010, 2'b10);
+        tx_data= generate_tx_data(2'b10,8'b10_10_10_10);
 
         //trigger the start signal
         @(posedge clk);
@@ -73,16 +73,22 @@ endfunction
 
         wait(tx_interrupt==1);//wait until the transmission is finish
         #(clk_period*2);
+        #500;
         $stop;
     end
+
+    always(negedge CS_n)begin
+        MOSI<=slave_output_reg[7];
+    end
+
 
     always @(negedge sclk_out) begin
         if(CS_n)begin
             MISO<=1'b0;
         end
         else begin
-            MISO<=slave_output_reg[9];
-            slave_output_reg<={slave_output_reg[8:0],1'b1};
+            slave_output_reg<={slave_output_reg[6:0],1'b1};
+            MISO<=slave_output_reg[6];
         end
     end
 endmodule

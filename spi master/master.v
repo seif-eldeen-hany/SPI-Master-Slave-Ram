@@ -126,8 +126,13 @@ module master#(
 
                 //recieving data and incrementing the counter
                 if(sclk_is_rising)begin
+                    if(bits_transfered>=2)begin
                     rx_shift_reg<={rx_shift_reg[6:0],MISO}; 
                     bits_transfered<=bits_transfered+1;
+                    end
+                    else begin
+                    bits_transfered<=bits_transfered+1;
+                    end
                 end
 
 
@@ -139,6 +144,7 @@ module master#(
             
             end
             else if(cs==finish)begin
+                bits_transfered<=4'b0000;
                 CS_n<=1'b1;
                 rx_data<=rx_shift_reg;
                 tx_interrupt<=1'b1;

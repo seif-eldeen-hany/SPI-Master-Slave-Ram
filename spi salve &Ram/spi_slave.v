@@ -1,4 +1,4 @@
-module slave (sclk , rst_n , SS_n , tx_valid , rx_valid , tx_data , rx_data , MOSI , MISO);
+module spi_slave (sclk , rst_n , SS_n , tx_valid , rx_valid , tx_data , rx_data , MOSI , MISO);
 
     input sclk , rst_n , SS_n , tx_valid , MOSI ;
     input [7:0] tx_data ;

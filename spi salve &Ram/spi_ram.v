@@ -1,4 +1,4 @@
-module RAM (sclk , rst_n , rx_data , tx_data , rx_valid , tx_valid);
+module spi_ram (sclk , rst_n , rx_data , tx_data , rx_valid , tx_valid);
 
     parameter DATA_WIDTH = 8 ;
     parameter MEM_DEPTH = 256 ;

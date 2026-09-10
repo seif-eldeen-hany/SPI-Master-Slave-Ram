@@ -132,7 +132,7 @@ initial begin
     @(negedge sclk);
     MOSI=1;
     @(negedge sclk);
-    MOSI=1;
+    MOSI=0;
     @(negedge sclk);
     MOSI=0;
     @(negedge sclk);

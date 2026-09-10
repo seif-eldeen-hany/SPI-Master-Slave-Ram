@@ -108,8 +108,8 @@ module spi_master#(
             tx_shift_reg<=10'b0;
         end
         else begin
-            //tx_interrupt<=1'b0;
-            //rx_interrupt<=1'b0;
+            tx_interrupt<=1'b0;
+            rx_interrupt<=1'b0;
 
             if (cs==idle)begin
                 CS_n<=1'b1;

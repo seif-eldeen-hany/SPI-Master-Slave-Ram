@@ -55,6 +55,7 @@ always @(posedge sclk , negedge rst_n) begin
         end
 
         else begin
+        rx_valid <= 0;
         rx_data <= {rx_data[8:0] , MOSI} ;    
         rx_count <= rx_count + 1 ;
         end
@@ -79,7 +80,7 @@ always @(negedge sclk , negedge rst_n) begin
         tx_count <= 0 ;
     end
     
-    else if (tx_count < 8) begin
+    else if (rx_count > 2) begin
         tx_count <= tx_count + 1 ;
     end
 

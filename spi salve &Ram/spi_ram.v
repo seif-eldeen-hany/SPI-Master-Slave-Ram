@@ -43,6 +43,7 @@ always @(posedge sclk , negedge rst_n) begin
                OP_READ_DATA : begin
                 tx_data <= mem_array[read_addr] ;
                 tx_valid <= 1 ;
+                tx_count <= 0 ;
                end
                 default: tx_data <= 0 ;
             endcase

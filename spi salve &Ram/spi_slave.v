@@ -49,7 +49,7 @@ always @(posedge sclk , negedge rst_n) begin
 
     else begin
         if (rx_count == 9) begin
-            rx_data [0] <= MOSI ;
+            rx_data <= {rx_data[8:0] , MOSI} ;
             rx_count <= 0 ;
             rx_valid <= 1 ; 
         end
@@ -62,7 +62,7 @@ always @(posedge sclk , negedge rst_n) begin
 end
 
 always @(*) begin
-    if (~SS_n && tx_count < 8) begin
+    if (~SS_n && tx_valid) begin 
         MISO = tx_data [7-tx_count] ; 
     end
     else begin

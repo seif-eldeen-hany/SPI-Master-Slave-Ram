@@ -17,6 +17,7 @@ module spi_ram (sclk , rst_n , rx_data , tx_data , rx_valid , tx_valid);
     reg [DATA_WIDTH-1:0] mem_array [0:MEM_DEPTH-1] ;
     reg [DATA_WIDTH-1:0] write_addr ;
     reg [DATA_WIDTH-1:0] read_addr ;
+    reg [3:0] tx_count ;
 
     integer i ;
 
@@ -29,22 +30,40 @@ always @(posedge sclk , negedge rst_n) begin
         tx_valid <= 0 ;
         write_addr <= 0 ;
         read_addr <= 0 ;
+        tx_count <= 0 ;
     end
 
     else begin
         tx_valid <= 0 ;
         if (rx_valid) begin
             case (rx_data [9:8])
-               OP_WRITE_ADDR : write_addr <= rx_data [DATA_WIDTH-1:0] ;
+               OP_WRITE_ADDR : write_addr <= rx_data [ADDR_WIDTH-1:0] ;
                OP_WRITE_DATA : mem_array[write_addr] <= rx_data [DATA_WIDTH-1:0] ;
-               OP_READ_ADDR : read_addr <= rx_data [DATA_WIDTH-1:0] ;
+               OP_READ_ADDR : read_addr <= rx_data [ADDR_WIDTH-1:0] ;
                OP_READ_DATA : begin
                 tx_data <= mem_array[read_addr] ;
-                tx_valid <= 1 ;
+                if (tx_count < 8) begin
+                    tx_count <= tx_count + 1 ;
+                    tx_valid <= 1 ;
+                end
+                else begin
+                tx_valid <= 0 ;
+                tx_count <= 0 ;
+               end
                end
                 default: tx_data <= 0 ;
             endcase
         end
+        /*else if (tx_valid && tx_count < 8) begin
+        tx_count <= tx_count + 1 ;
+        if (tx_count == 7) begin
+            tx_valid <= 0 ;
+        end
+        end
+         else begin
+        tx_valid <= 0 ;
+        tx_count <= 0 ;
+        end*/
     end
 end    
 endmodule

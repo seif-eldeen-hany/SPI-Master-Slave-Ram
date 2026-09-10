@@ -48,7 +48,7 @@ always @(posedge sclk , negedge rst_n) begin
             endcase
         end
         if(send_data_flag)begin
-            if(tx_count<8)begin
+            if(tx_count<7)begin
                 tx_count <= tx_count + 1 ;
                 tx_valid <= 1 ;
             end

@@ -141,6 +141,7 @@ initial begin
 
     SS_n=1;
     repeat(5) @(negedge sclk);
+    #150;
     $stop;
 end
 endmodule

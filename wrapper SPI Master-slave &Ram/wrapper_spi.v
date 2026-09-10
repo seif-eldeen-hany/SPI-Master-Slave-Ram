@@ -24,17 +24,17 @@ module wrapper_spi #(
         wire MOSI__MOSI;
 
     spi_master #(.toggle_count(toggle_count)) S_M(
-        //inputs form cpu
+    //inputs form cpu
         .clk(clk),
         .rst_n(rst_n),
         .start(start),
         .tx_data(tx_data),
-        //internal wires with slave&ram
+    //internal wires with slave&ram
         .MISO(MISO__MISO),
         .CS_n(CS_n__SS_n),
         .sclk_out(sclk_out__sclk),
         .MOSI(MOSI__MOSI),
-        //outputs to the cpu
+    //outputs to the cpu
         .tx_interrupt(tx_interrupt),
         .rx_interrupt(rx_interrupt),
         .rx_data(rx_data)
@@ -45,9 +45,9 @@ module wrapper_spi #(
         .mem_depth(mem_depth),
         .addr_width(addr_width)
     ) W_S_R(
-        //inputs from cpu
+    //inputs from cpu
         .rst_n(rst_n),
-        //internal wires with master
+    //internal wires with master
         .sclk(sclk_out__sclk),
         .SS_n(CS_n__SS_n),
         .MOSI(MOSI__MOSI),

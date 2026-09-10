@@ -74,8 +74,13 @@ always @(negedge sclk , negedge rst_n) begin
     else if (SS_n) begin
         tx_count <= 0 ;
     end
-    else if (rx_count > 2) begin 
-        tx_count <= tx_count + 1 ;
+
+    else if (tx_count < 8) begin 
+    tx_count <= tx_count + 1 ; 
     end
-end
+
+    else begin
+        tx_count <= 0 ;
+    end
+    end
 endmodule

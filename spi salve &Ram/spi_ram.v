@@ -44,6 +44,17 @@ always @(posedge sclk , negedge rst_n) begin
                 default: tx_valid <= 0 ;
             endcase
         end
+        if(send_data_flag)begin
+            if(tx_count<8)begin
+                tx_count <= tx_count + 1 ;
+                tx_valid <= 1 ;
+            end
+            else begin
+                send_data_flag <= 0 ;
+                tx_valid <= 0 ;
+                tx_count <= 0 ;     
+            end
+        end
     end
 end    
 endmodule

@@ -57,6 +57,7 @@ always @(posedge sclk , negedge rst_n) begin
             end
             else begin
                 send_data_flag <= 0 ;
+                tx_valid <= 0 ;
                 tx_count <= 0 ;     
             end
         end

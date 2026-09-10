@@ -16,7 +16,7 @@ module spi_master#(
 );
     //state assignment
     localparam idle= 2'b00; //no start yer
-    localparam load= 2'b01; //start is 1 ,now load data from the tx_data
+    localparam load= 2'b01; //start is 1 ,now load data from te tx_data
     localparam transfer= 2'b10; // shifting and counting
     localparam finish= 2'b11; // finsihed the whole process and all data are ready
 

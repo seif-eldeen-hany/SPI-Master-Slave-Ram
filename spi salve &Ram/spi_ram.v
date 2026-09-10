@@ -33,6 +33,10 @@ always @(posedge sclk , negedge rst_n) begin
         read_addr <= 0 ;
         tx_count <= 0 ;
         send_data_flag<= 0 ;
+
+        /*else if (SS_n) begin
+            tx_count <= 0 ;
+        end*/
     end
     else begin
         if (rx_valid) begin

@@ -1,13 +1,14 @@
-module spi_slave (sclk,rst_n,SS_n,MISO,MOSI,rx_data,rx_valid,tx_data,tx_valid);
-parameter [2:0] idle=3'b000;
-parameter [2:0] check=3'b001;
-parameter [2:0] write=3'b010;
-parameter [2:0] read_addr=3'b011;
-parameter [2:0] read_data=3'b100;
+module spi_slave #(parameter data_width=8)
+(sclk,rst_n,SS_n,MISO,MOSI,rx_data,rx_valid,tx_data,tx_valid);
+
+localparam [2:0] idle=3'b000;
+localparam [2:0] check=3'b001;
+localparam [2:0] write=3'b010;
+localparam [2:0] read_addr=3'b011;
+localparam [2:0] read_data=3'b100;
 reg [2:0] cs,ns;
 
 
-parameter data_width=8;
 
 input MOSI,sclk,rst_n,SS_n,tx_valid;
 input [data_width-1:0] tx_data;

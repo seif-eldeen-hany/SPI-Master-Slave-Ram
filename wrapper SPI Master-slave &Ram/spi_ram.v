@@ -1,7 +1,8 @@
-module spi_ram (sclk,rst_n,tx_valid,rx_valid,tx_data,rx_data);
-parameter addr_width=8;
-parameter data_width=8;
-parameter mem_depth=256;
+module spi_ram #(
+    parameter addr_width=8,
+    parameter data_width=8,
+    parameter mem_depth=256
+)(sclk,rst_n,tx_valid,rx_valid,tx_data,rx_data);
     
 input sclk,rst_n,rx_valid;
 input [data_width+1:0] rx_data;

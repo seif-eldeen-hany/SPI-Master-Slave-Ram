@@ -11,11 +11,11 @@ parameter mem_depth=256
     //outputs to master
     output MISO 
 );
-    parameter [2:0] idle=3'b000;
-    parameter [2:0] check=3'b001; 
-    parameter [2:0] write=3'b010; 
-    parameter [2:0] read_addr=3'b011;
-    parameter [2:0] read_data=3'b100;
+    localparam [2:0] idle=3'b000;
+    localparam [2:0] check=3'b001; 
+    localparam [2:0] write=3'b010; 
+    localparam [2:0] read_addr=3'b011;
+    localparam [2:0] read_data=3'b100;
 
     wire [data_width-1:0] tx_data;
     wire tx_valid;

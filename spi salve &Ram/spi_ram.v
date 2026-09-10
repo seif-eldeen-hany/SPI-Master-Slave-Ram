@@ -42,13 +42,19 @@ always @(posedge sclk , negedge rst_n) begin
                OP_READ_ADDR : read_addr <= rx_data [ADDR_WIDTH-1:0] ;
                OP_READ_DATA : begin
                 tx_data <= mem_array[read_addr] ;
-                tx_valid <= 1 ;
+                if (tx_count < 8) begin
+                    tx_count <= tx_count + 1 ;
+                    tx_valid <= 1 ;
+                end
+                else begin
+                tx_valid <= 0 ;
                 tx_count <= 0 ;
+               end
                end
                 default: tx_data <= 0 ;
             endcase
         end
-        else if (tx_valid && tx_count < 8) begin
+        /*else if (tx_valid && tx_count < 8) begin
         tx_count <= tx_count + 1 ;
         if (tx_count == 7) begin
             tx_valid <= 0 ;
@@ -57,7 +63,7 @@ always @(posedge sclk , negedge rst_n) begin
          else begin
         tx_valid <= 0 ;
         tx_count <= 0 ;
-        end
+        end*/
     end
 end    
 endmodule

@@ -1,4 +1,4 @@
-module master#( 
+module spi_master#( 
     parameter toggle_count = 5 // input/(2*output) for clk divider
 )(
     input clk, // 50Mhz T=20ns

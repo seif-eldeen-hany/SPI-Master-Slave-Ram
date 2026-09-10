@@ -16,7 +16,7 @@ output reg [data_width+1:0] rx_data;
 
 reg [3:0] counter;
 reg [3:0] counter_4_read_data;
-reg read_addr_flag;  //will be 1 when RAM read 
+reg read_addr_flag;  //will be 1 when ram read 
 reg send_data_flag;  //will be 1 when slave send data to master 
 
 

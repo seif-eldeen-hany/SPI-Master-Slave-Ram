@@ -67,7 +67,6 @@ always @(*) begin
         MISO = tx_data [7-tx_count] ; 
     end
     else begin
-        tx_count = 0;
         MISO = 0 ;
     end
 end

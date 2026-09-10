@@ -80,10 +80,7 @@ always @(negedge sclk , negedge rst_n) begin
         tx_count <= 0 ;
     end
 
-    else if (~tx_valid) begin
-    tx_count <= 0;
-    end
-    else if (tx_count < 7) begin 
+    else if (tx_count < 8) begin 
     tx_count <= tx_count + 1 ; 
     end
 

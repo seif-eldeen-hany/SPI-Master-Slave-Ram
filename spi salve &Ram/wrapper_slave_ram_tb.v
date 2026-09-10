@@ -10,6 +10,18 @@ module wrapper_slave_ram_tb;
 
     wire MISO;
 
+    wrapper_slave_ram #(
+        .DATA_WIDTH(DATA_WIDTH),
+        .MEM_DEPTH(MEM_DEPTH),
+        .ADDR_WIDTH(ADDR_WIDTH)
+    )DUT ( 
+        .sclk(sclk) ,
+        .rst_n(rst_n) ,
+        .SS_n(SS_n) ,
+        .MOSI(MOSI) ,
+        .MISO(MISO)  
+    );
+
     always #5 sclk=~sclk;
 initial begin
     sclk=0;

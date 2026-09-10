@@ -1,10 +1,10 @@
-module spi_ram (sclk , rst_n , rx_data , tx_data , rx_valid , tx_valid);
+module spi_ram (sclk , rst_n , rx_data , tx_data , rx_valid , tx_valid , SS_n);
 
     parameter DATA_WIDTH = 8 ;
     parameter MEM_DEPTH = 256 ;
     parameter ADDR_WIDTH = 8 ;
 
-    input sclk , rst_n , rx_valid ;
+    input sclk , rst_n , rx_valid , SS_n ;
     input [9:0] rx_data ;
     output reg tx_valid ;
     output reg [7:0] tx_data ;
@@ -34,9 +34,9 @@ always @(posedge sclk , negedge rst_n) begin
         tx_count <= 0 ;
         send_data_flag<= 0 ;
 
-        /*else if (SS_n) begin
+        else if (SS_n) begin
             tx_count <= 0 ;
-        end*/
+        end
     end
     else begin
         if (rx_valid) begin

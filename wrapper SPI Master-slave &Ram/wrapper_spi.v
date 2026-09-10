@@ -9,9 +9,9 @@ module wrapper_spi #(
     input start, //signal comming from cpu or testbench that indicates to start the transmission and recieving
     input [9:0] tx_data, ///transmitted 2 bit opcode + 8 bit data
 
-    output reg tx_interrupt, //1 when transmiting is finished
-    output reg rx_interrupt, //1 when it is ready to read the rx_data
-    output reg [7:0] rx_data, //data sent to cpu or testbench
+    output tx_interrupt, //1 when transmiting is finished
+    output rx_interrupt, //1 when it is ready to read the rx_data
+    output [7:0] rx_data //data sent to cpu or testbench
 );
 
 //master<---->slave&ram internal wires

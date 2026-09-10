@@ -42,11 +42,11 @@ end
 
 initial begin
 	clk=0;
-	rstn=0;
+	rst_n=0;
 	start=0;
-	counter=0;
+    tx_data=10'b0000000000;
 	repeat(100) @(negedge clk);
-	rstn=1;
+	rst_n=1;
 	start=1;
 
 	//write address

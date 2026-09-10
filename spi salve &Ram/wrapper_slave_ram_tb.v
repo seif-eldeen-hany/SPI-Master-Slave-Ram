@@ -2,7 +2,7 @@ module wrapper_slave_ram_tb;
     parameter DATA_WIDTH = 8;
     parameter MEM_DEPTH = 256;
     parameter ADDR_WIDTH = 8;
-
+ 
     reg sclk;
     reg rst_n;
     reg SS_n;
@@ -20,7 +20,7 @@ module wrapper_slave_ram_tb;
         .SS_n(SS_n) ,
         .MOSI(MOSI) ,
         .MISO(MISO)  
-    );
+    ); 
 
     always #5 sclk=~sclk;
 initial begin
@@ -132,7 +132,7 @@ initial begin
     @(negedge sclk);
     MOSI=1;
     @(negedge sclk);
-    MOSI=0;
+    MOSI=1;
     @(negedge sclk);
     MOSI=0;
     @(negedge sclk);

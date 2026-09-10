@@ -2,9 +2,9 @@ module wrapper_slave_ram #(
     parameter DATA_WIDTH = 8,
     parameter MEM_DEPTH = 256,
     parameter ADDR_WIDTH = 8) 
-(sclk , rst_n , SS_n , MISO , MOSI);
+(sclk , rst_n , SS_n , MISO , MOSI, enable);
 
-    input sclk , rst_n , SS_n , MOSI ;
+    input sclk , rst_n , SS_n , MOSI ,enable;
     output MISO ;
 
     wire [9:0] rx_data ;
@@ -34,7 +34,8 @@ module wrapper_slave_ram #(
         .rx_data(rx_data),
         .tx_data(tx_data),
         .rx_valid(rx_valid),
-        .tx_valid(tx_valid)
+        .tx_valid(tx_valid),
+        .enable(SS_n)
     );
 
 endmodule

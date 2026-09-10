@@ -1,10 +1,10 @@
-module spi_ram (sclk , rst_n , rx_data , tx_data , rx_valid , tx_valid);
+module spi_ram (sclk , rst_n , rx_data , tx_data , rx_valid , tx_valid, enable);
 
     parameter DATA_WIDTH = 8 ;
     parameter MEM_DEPTH = 256 ;
     parameter ADDR_WIDTH = 8 ;
 
-    input sclk , rst_n , rx_valid ;
+    input sclk , rst_n , rx_valid, enable ;
     input [9:0] rx_data ;
     output reg tx_valid ;
     output reg [7:0] tx_data ;
@@ -18,6 +18,7 @@ module spi_ram (sclk , rst_n , rx_data , tx_data , rx_valid , tx_valid);
     reg [DATA_WIDTH-1:0] write_addr ;
     reg [DATA_WIDTH-1:0] read_addr ;
     reg [3:0] tx_count ;
+    reg send_data_flag;
 
     integer i ;
 
@@ -31,30 +32,39 @@ always @(posedge sclk , negedge rst_n) begin
         write_addr <= 0 ;
         read_addr <= 0 ;
         tx_count <= 0 ;
+        send_data_flag<= 0 ;
     end
-
+    else if(enable)begin
+        tx_count<=0;
+    end
     else begin
-        tx_valid <= 0 ;
         if (rx_valid) begin
             case (rx_data [9:8])
-               OP_WRITE_ADDR : write_addr <= rx_data [ADDR_WIDTH-1:0] ;
-               OP_WRITE_DATA : mem_array[write_addr] <= rx_data [DATA_WIDTH-1:0] ;
-               OP_READ_ADDR : read_addr <= rx_data [ADDR_WIDTH-1:0] ;
-               OP_READ_DATA : begin
+                OP_WRITE_ADDR : write_addr <= rx_data [ADDR_WIDTH-1:0] ;
+                OP_WRITE_DATA : mem_array[write_addr] <= rx_data [DATA_WIDTH-1:0] ;
+                OP_READ_ADDR : read_addr <= rx_data [ADDR_WIDTH-1:0] ;
+                OP_READ_DATA : begin
                 tx_data <= mem_array[read_addr] ;
-                if (tx_count < 8) begin
-                    tx_count <= tx_count + 1 ;
-                    tx_valid <= 1 ;
-                end
-                else begin
-                tx_valid <= 0 ;
-                tx_count <= 0 ;
-               end
+                send_data_flag<= 1 ;
                end
                 default: tx_data <= 0 ;
             endcase
         end
-        /*else if (tx_valid && tx_count < 8) begin
+        if(send_data_flag)begin
+            if(tx_count<8)begin
+                tx_count <= tx_count + 1 ;
+                tx_valid <= 1 ;
+            end
+            else begin
+                send_data_flag <= 0 ;
+                tx_valid <= 0 ;     
+            end
+        end
+    end
+end    
+endmodule
+        //was an another solution
+        /*else if (tx_valid && tx_count < 8) begin 
         tx_count <= tx_count + 1 ;
         if (tx_count == 7) begin
             tx_valid <= 0 ;
@@ -64,6 +74,3 @@ always @(posedge sclk , negedge rst_n) begin
         tx_valid <= 0 ;
         tx_count <= 0 ;
         end*/
-    end
-end    
-endmodule

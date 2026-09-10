@@ -1,5 +1,8 @@
 module wrapper_spi #(
-    parameter toggle_count = 5 // input/(2*output) for clk divider
+    parameter toggle_count = 5, // input/(2*output) for clk divider
+    parameter DATA_WIDTH = 8,
+    parameter MEM_DEPTH = 256,
+    parameter ADDR_WIDTH = 8
 ) (
     input clk, // 50Mhz T=20ns
     input rst_n, //active low

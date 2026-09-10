@@ -1,91 +1,152 @@
-module spi_slave (sclk , rst_n , SS_n , tx_valid , rx_valid , tx_data , rx_data , MOSI , MISO);
- 
-    input sclk , rst_n , SS_n , tx_valid , MOSI ;
-    input [7:0] tx_data ;
-    output reg MISO , rx_valid ;
-    output reg [9:0] rx_data ;
+module spi_slave (sclk,rst_n,SS_n,MISO,MOSi,rx_data,rx_valid,tx_data,tx_valid);
+parameter [2:0] idle=3'b000;
+parameter [2:0] check=3'b001;
+parameter [2:0] write=3'b010;
+parameter [2:0] read_addr=3'b011;
+parameter [2:0] read_data=3'b100;
+reg [2:0] cs,ns;
 
-    localparam IDLE = 2'b00 ;
-    localparam CHK_CMD = 2'b01 ;
-    localparam WRITE = 2'b10 ;
-    localparam READ = 2'b11 ;
 
-    reg [3:0] rx_count ;
-    reg [3:0] tx_count ;
+parameter data_width=8;
 
-    reg [1:0] cs , ns ;
- 
-always @(posedge sclk , negedge rst_n) begin
-    if (~rst_n) begin
-        cs <= IDLE ;
-    end
-    else begin
-        cs <= ns ;
-    end
-end    
+input MOSi,sclk,rst_n,SS_n,tx_valid;
+input [data_width-1:0] tx_data;
+output reg MISO,rx_valid;
+output reg [data_width+1:0] rx_data;
 
-always @(*) begin
-    case (cs)
-       IDLE : ns = SS_n? IDLE : CHK_CMD ;
-       CHK_CMD : ns = SS_n? IDLE : (MOSI? READ : WRITE) ;
-       WRITE : ns = SS_n? IDLE : WRITE ;
-       READ : ns = SS_n? IDLE : READ ; 
-        default: ns = IDLE ;
-    endcase
-end 
+reg [3:0] counter;
+reg [3:0] counter_4_read_data;
+reg read_addr_flag;  //will be 1 when RAM read 
+reg send_data_flag;  //will be 1 when slave send data to master 
 
-always @(posedge sclk , negedge rst_n) begin
-    if (~rst_n) begin
-        rx_data <= 0 ;
-        rx_count <= 0 ;
-        rx_valid <= 0 ; 
-    end    
 
-    else if (SS_n) begin
-        rx_data <= 0 ;
-        rx_count <= 0 ;
-        rx_valid <= 0 ;
-    end 
+always @(posedge sclk or negedge rst_n) begin
+	if(~rst_n) begin
+		cs <= idle;
+	end
+	else begin
+		cs <= ns;
+	end
+end
 
-    else begin
-        if (rx_count == 9) begin
-            rx_data <= {rx_data[8:0] , MOSI} ;
-            rx_count <= 0 ;
-            rx_valid <= 1 ; 
+always @(*)begin
+	case (cs)
+	idle:begin
+		if(SS_n) ns=idle;
+		else ns=check;
+	end
+	check:begin
+		if(SS_n) ns=idle;
+		else begin
+			if (~MOSi) ns = write;
+
+			else if (MOSi) begin
+				if (read_addr_flag) ns=read_data;
+				else begin 
+					ns=read_addr;
+				end
+			end
+		end
+		end
+	write:begin
+		if(SS_n) ns=idle;
+		else ns=write;
+	end
+	read_data:begin
+		if(SS_n) ns=idle;
+		else ns=read_data;
+	end
+	read_addr:begin
+		if(SS_n) ns=idle;
+		else ns=read_addr;
+	end
+	default: ns=idle;
+	endcase
+end
+
+
+always @(posedge sclk or negedge rst_n) begin
+	if (~rst_n) begin
+		read_addr_flag <= 0;
+		rx_valid <= 0;
+		rx_data <= 0;
+		counter <= 0;
+		send_data_flag <= 0;
+	end
+
+	else if (SS_n) begin
+		counter <= 0;
+		rx_valid <= 0;
+	end
+
+	else begin
+		if(cs == check)begin
+			rx_data [9] <= MOSi;
+			counter  <= counter + 1;
+		end
+		else if(cs == write)begin
+            if (counter < 9) begin
+            	rx_data[9 - counter] <= MOSi;
+                counter  <= counter + 1;
+                rx_valid <= 0;
+            end 
+        else begin 
+				rx_data[9 - counter] <= MOSi;
+                counter  <= 0; 
+                rx_valid <= 1;
+            end
         end
-
-        else begin
-        rx_valid <= 0;
-        rx_data <= {rx_data[8:0] , MOSI} ;    
-        rx_count <= rx_count + 1 ;
+		else if(cs == read_addr) begin
+            if (counter < 9) begin
+                rx_data[9 - counter] <= MOSi;
+                counter  <= counter + 1;
+                rx_valid <= 0;
+            end 
+            else begin
+			rx_data[9 - counter] <= MOSi;	 
+            counter <= 0;
+            rx_valid <= 1; 
+            end
+            read_addr_flag <= 1;
         end
-    end       
+		if(cs == read_data)begin
+			if (counter < 9) begin
+				rx_data[9 - counter] <= MOSi;
+				counter <= counter + 1;
+				rx_valid <= 0;
+			end
+			else begin 
+				rx_data[9 - counter] <= MOSi;
+				counter <= 0;
+				rx_valid <= 1;
+				read_addr_flag <= 0;
+				send_data_flag <= 1;
+			end
+		end
+    end
 end
 
 always @(*) begin
-    if (~SS_n && tx_valid) begin 
-        MISO = tx_data [7-tx_count] ; 
+    if (~SS_n && send_data_flag  && counter_4_read_data < 8) begin
+        MISO = tx_data[7 - counter_4_read_data];
     end
     else begin
-        MISO = 0 ;
+        MISO = 0;
     end
 end
 
-always @(negedge sclk , negedge rst_n) begin
-    if (~rst_n) begin
-        tx_count <= 0 ;
-    end
-
-    else if (SS_n) begin
-        tx_count <= 0 ;
-    end
-
-    else if (tx_count < 8) begin 
-    tx_count <= tx_count + 1 ; 
-    end
-
-    else begin
-        tx_count <= 0 ;
-    end
-    end
+always @(negedge sclk or negedge rst_n) begin
+	if (~rst_n) begin
+		counter_4_read_data <= 0;
+	end
+	else if (SS_n) begin
+		counter_4_read_data <= 0;
+	end
+	else if (send_data_flag && counter_4_read_data < 8) begin
+		counter_4_read_data <= counter_4_read_data + 1;
+	end 
+	else if (counter_4_read_data == 8) begin
+		counter_4_read_data <= 0;            
+	end
+end
 endmodule

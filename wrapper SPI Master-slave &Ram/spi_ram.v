@@ -1,68 +1,52 @@
-module spi_ram (sclk , rst_n , rx_data , tx_data , rx_valid , tx_valid,enable );
- 
-    parameter DATA_WIDTH = 8 ;
-    parameter MEM_DEPTH = 256 ;
-    parameter ADDR_WIDTH = 8 ;
+module spi_ram (sclk,rst_n,tx_valid,rx_valid,tx_data,rx_data);
+parameter addr_width=8;
+parameter data_width=8;
+parameter mem_depth=256;
+    
+input sclk,rst_n,rx_valid;
+input [data_width+1:0] rx_data;
+output reg tx_valid;
+output reg [data_width-1:0] tx_data;
 
-    input sclk , rst_n , rx_valid ,enable ;
-    input [9:0] rx_data ;
-    output reg tx_valid ;
-    output reg [7:0] tx_data ;
+reg [data_width-1:0] read_adr;
+reg [data_width-1:0] write_adr;
+reg [data_width-1:0] mem_array [0:mem_depth-1];
+reg tx_valid_unstretched;
+integer i;
 
-    localparam OP_WRITE_ADDR = 2'b00 ;
-    localparam OP_WRITE_DATA = 2'b01 ;
-    localparam OP_READ_ADDR = 2'b10 ;
-    localparam OP_READ_DATA = 2'b11 ;
- 
-    reg [DATA_WIDTH-1:0] mem_array [0:MEM_DEPTH-1] ;
-    reg [DATA_WIDTH-1:0] write_addr ;
-    reg [DATA_WIDTH-1:0] read_addr ;
-    reg [3:0] tx_count_ram ;
-    reg send_data_flag;
-
-    integer i ;
-
-always @(posedge sclk , negedge rst_n) begin
+always @(posedge sclk or negedge rst_n) begin
     if (~rst_n) begin
-        for (i = 0 ; i < MEM_DEPTH ; i = i + 1 ) begin
-            mem_array[i] <= 0 ;
-        end
-        tx_data <= 0 ;
-        tx_valid <= 0 ;
-        write_addr <= 0 ;
-        read_addr <= 0 ;
-        tx_count_ram <= 0 ;
-        send_data_flag<= 0 ; 
+        for(i=0 ; i<mem_depth ; i=i+1) begin
+        	mem_array[i] <= 0;
+    	end
+        tx_data <= 0;
+        tx_valid_unstretched<= 0; 
+        write_adr <= 0;
+        read_adr <= 0;
     end
- 
 
     else begin
-        if(enable)begin
-            tx_count_ram<=0;
-        end
-        if (rx_valid) begin
-            case (rx_data [9:8])
-                OP_WRITE_ADDR : write_addr <= rx_data [ADDR_WIDTH-1:0] ;
-                OP_WRITE_DATA : mem_array[write_addr] <= rx_data [DATA_WIDTH-1:0] ;
-                OP_READ_ADDR : read_addr <= rx_data [ADDR_WIDTH-1:0] ;
-                OP_READ_DATA : begin
-                tx_data <= mem_array[read_addr] ;
-                send_data_flag<= 1 ;
-               end
-                default: tx_data <= 0 ;
+       tx_valid_unstretched <= 0;
+        if (rx_valid) begin 
+            case (rx_data [data_width+1:data_width])
+            2'b00: write_adr <= rx_data [data_width-1:0];
+            2'b01: begin
+                mem_array [write_adr] <= rx_data [data_width-1:0];
+            end
+            2'b10: read_adr <= rx_data [data_width-1:0];
+            2'b11: begin
+                tx_data <= mem_array [read_adr];
+                tx_valid_unstretched <= 1;
+            end
             endcase
-        end
-        if(send_data_flag)begin
-                tx_valid <= 1 ;
-            if(tx_count_ram<11)begin
-                tx_count_ram <= tx_count_ram + 1 ;
-            end
-            else begin
-                send_data_flag <= 0 ;
-                tx_valid <= 0 ;
-                tx_count_ram <= 0 ;     
-            end
-        end
+    	end
     end
-end    
+end
+always @(negedge sclk or negedge rst_n) begin
+    if (~rst_n) begin
+        tx_valid <= 0;
+    end
+    else 
+    tx_valid <= tx_valid_unstretched;
+end
 endmodule

@@ -34,10 +34,13 @@ always @(posedge sclk , negedge rst_n) begin
         tx_count <= 0 ;
         send_data_flag<= 0 ;
 
-        else if (SS_n) begin
+        
+    end
+
+    else if (SS_n) begin
             tx_count <= 0 ;
         end
-    end
+        
     else begin
         if (rx_valid) begin
             case (rx_data [9:8])

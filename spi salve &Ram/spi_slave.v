@@ -12,7 +12,6 @@ module spi_slave (sclk , rst_n , SS_n , tx_valid , rx_valid , tx_data , rx_data 
 
     reg [3:0] rx_count ;
     reg [3:0] tx_count ;
-
     reg [1:0] cs , ns ;
 
 always @(posedge sclk , negedge rst_n) begin
@@ -40,24 +39,21 @@ always @(posedge sclk , negedge rst_n) begin
         rx_count <= 0 ;
         rx_valid <= 0 ; 
     end    
-
     else if (SS_n) begin
         rx_data <= 0 ;
         rx_count <= 0 ;
         rx_valid <= 0 ;
     end 
-
     else begin
         if (rx_count == 9) begin
             rx_data <= {rx_data[8:0] , MOSI} ;
             rx_count <= 0 ;
             rx_valid <= 1 ; 
         end
-
         else begin
-        rx_valid <= 0;
-        rx_data <= {rx_data[8:0] , MOSI} ;    
-        rx_count <= rx_count + 1 ;
+            rx_data <= {rx_data[8:0] , MOSI} ;    
+            rx_count <= rx_count + 1 ;
+            rx_valid <= 0 ; // FIX: Clear rx_valid immediately
         end
     end       
 end
@@ -75,7 +71,6 @@ always @(negedge sclk , negedge rst_n) begin
     if (~rst_n) begin
         tx_count <= 0 ;
     end
-
     else if (SS_n) begin
         tx_count <= 0 ;
     end

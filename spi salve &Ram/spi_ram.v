@@ -17,8 +17,6 @@ module spi_ram (sclk , rst_n , rx_data , tx_data , rx_valid , tx_valid);
     reg [DATA_WIDTH-1:0] mem_array [0:MEM_DEPTH-1] ;
     reg [DATA_WIDTH-1:0] write_addr ;
     reg [DATA_WIDTH-1:0] read_addr ;
-    reg [3:0] tx_count ;
-    reg send_data_flag;
 
     integer i ;
 
@@ -43,12 +41,13 @@ always @(posedge sclk , negedge rst_n) begin
             case (rx_data [9:8])
                 OP_WRITE_ADDR : write_addr <= rx_data [ADDR_WIDTH-1:0] ;
                 OP_WRITE_DATA : mem_array[write_addr] <= rx_data [DATA_WIDTH-1:0] ;
-                OP_READ_ADDR : read_addr <= rx_data [ADDR_WIDTH-1:0] ;
-                OP_READ_DATA : begin
-                tx_data <= mem_array[read_addr] ;
-                send_data_flag<= 1 ;
-               end
-                default: tx_data <= 0 ;
+                OP_READ_ADDR : begin
+                                read_addr <= rx_data [ADDR_WIDTH-1:0] ;
+                                tx_data <= mem_array[rx_data [ADDR_WIDTH-1:0]] ;
+                                tx_valid <= 1 ;
+                                end
+                OP_READ_DATA : tx_valid <= 0 ;
+                default: tx_valid <= 0 ;
             endcase
         end
         if(send_data_flag)begin

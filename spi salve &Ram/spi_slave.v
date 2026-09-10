@@ -63,7 +63,7 @@ always @(posedge sclk , negedge rst_n) begin
 end
 
 always @(*) begin
-    if (~SS_n && tx_count < 8) begin 
+    if (~SS_n && tx_valid) begin 
         MISO = tx_data [7-tx_count] ; 
     end
     else begin

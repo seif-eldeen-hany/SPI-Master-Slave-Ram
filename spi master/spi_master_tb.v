@@ -1,5 +1,5 @@
 `timescale 1ns/1ns
-module master_tb; 
+module spi_master_tb; 
 
     parameter toggle_count=5;
     parameter clk_period=20;//20ns

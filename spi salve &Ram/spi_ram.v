@@ -14,7 +14,7 @@ module spi_ram (sclk , rst_n , rx_data , tx_data , rx_valid , tx_valid);
     localparam OP_READ_ADDR = 2'b10 ;
     localparam OP_READ_DATA = 2'b11 ;
  
-    reg [DATA_WIDTH:0] mem_array [0:MEM_DEPTH-1] ;
+    reg [DATA_WIDTH-1:0] mem_array [0:MEM_DEPTH-1] ;
     reg [DATA_WIDTH-1:0] write_addr ;
     reg [DATA_WIDTH-1:0] read_addr ;
 
@@ -36,7 +36,7 @@ always @(posedge sclk , negedge rst_n) begin
         if (rx_valid) begin
             case (rx_data [9:8])
                OP_WRITE_ADDR : write_addr <= rx_data [DATA_WIDTH-1:0] ;
-               OP_WRITE_DATA : mem_array[write_addr] <= rx_data [DATA_WIDTH-1:0]
+               OP_WRITE_DATA : mem_array[write_addr] <= rx_data [DATA_WIDTH-1:0] ;
                OP_READ_ADDR : read_addr <= rx_data [DATA_WIDTH-1:0] ;
                OP_READ_DATA : begin
                 tx_data <= mem_array[read_addr] ;

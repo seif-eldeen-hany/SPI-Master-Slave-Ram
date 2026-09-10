@@ -73,12 +73,10 @@ end
 always @(negedge sclk , negedge rst_n) begin
     if (~rst_n) begin
         tx_count <= 0 ;
-        tx_data <= 0 ;
     end
 
     else if (SS_n) begin
         tx_count <= 0 ;
-        tx_data <= 0 ;
     end
     
     else if (tx_count < 8) begin

@@ -34,7 +34,7 @@ module wrapper_slave_ram #(
         .rx_data(rx_data),
         .tx_data(tx_data),
         .rx_valid(rx_valid),
-        .tx_valid(tx_valid),
+        .tx_valid(tx_valid)
     );
 
 endmodule

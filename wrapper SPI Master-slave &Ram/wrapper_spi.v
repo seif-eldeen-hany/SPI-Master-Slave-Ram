@@ -8,35 +8,36 @@ module wrapper_spi #(
 
     output reg tx_interrupt, //1 when transmiting is finished
     output reg rx_interrupt, //1 when it is ready to read the rx_data
-    output reg [7:0] rx_data,//data sent to cpu or testbench
+    output reg [7:0] rx_data, //data sent to cpu or testbench
 );
 
-    //master<---->slave internal wires
-        //slave--->master
-            wire MISO__MISO;
-        //master--->slave
-            wire CS_n__SS_n;
-            wire sclk_out__sclk;
-            wire MOSI__MOSI;
-
-
+//master<---->slave&ram internal wires
+    //slave--->master
+        wire MISO__MISO;
+    //master--->slave
+        wire CS_n__SS_n;
+        wire sclk_out__sclk;
+        wire MOSI__MOSI;
 
 
 spi_master #(.toggle_count(toggle_count)) S_M(
-    //inputs
+    //inputs form cpu
     .clk(clk),
     .rst_n(rst_n),
     .start(start),
     .tx_data(tx_data),
-    //internal wires
+    //internal wires with slave&ram
     .MISO(MISO__MISO),
     .CS_n(CS_n__SS_n),
     .sclk_out(sclk_out__sclk),
     .MOSI(MOSI__MOSI),
-    //outputs
+    //outputs to the cpu
     .tx_interrupt(tx_interrupt),
     .rx_interrupt(rx_interrupt),
     .rx_data(rx_data)
 );
-    
+
+wrapper_slave_ram #() W_S_R(
+
+);
 endmodule

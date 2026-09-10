@@ -1,4 +1,4 @@
-module spi_slave (sclk,rst_n,SS_n,MISO,MOSi,rx_data,rx_valid,tx_data,tx_valid);
+module spi_slave (sclk,rst_n,SS_n,MISO,MOSI,rx_data,rx_valid,tx_data,tx_valid);
 parameter [2:0] idle=3'b000;
 parameter [2:0] check=3'b001;
 parameter [2:0] write=3'b010;
@@ -9,7 +9,7 @@ reg [2:0] cs,ns;
 
 parameter data_width=8;
 
-input MOSi,sclk,rst_n,SS_n,tx_valid;
+input MOSI,sclk,rst_n,SS_n,tx_valid;
 input [data_width-1:0] tx_data;
 output reg MISO,rx_valid;
 output reg [data_width+1:0] rx_data;
@@ -38,9 +38,9 @@ always @(*)begin
 	check:begin
 		if(SS_n) ns=idle;
 		else begin
-			if (~MOSi) ns = write;
+			if (~MOSI) ns = write;
 
-			else if (MOSi) begin
+			else if (MOSI) begin
 				if (read_addr_flag) ns=read_data;
 				else begin 
 					ns=read_addr;
@@ -81,29 +81,29 @@ always @(posedge sclk or negedge rst_n) begin
 
 	else begin
 		if(cs == check)begin
-			rx_data [9] <= MOSi;
+			rx_data [9] <= MOSI;
 			counter  <= counter + 1;
 		end
 		else if(cs == write)begin
             if (counter < 9) begin
-            	rx_data[9 - counter] <= MOSi;
+            	rx_data[9 - counter] <= MOSI;
                 counter  <= counter + 1;
                 rx_valid <= 0;
             end 
         else begin 
-				rx_data[9 - counter] <= MOSi;
+				rx_data[9 - counter] <= MOSI;
                 counter  <= 0; 
                 rx_valid <= 1;
             end
         end
 		else if(cs == read_addr) begin
             if (counter < 9) begin
-                rx_data[9 - counter] <= MOSi;
+                rx_data[9 - counter] <= MOSI;
                 counter  <= counter + 1;
                 rx_valid <= 0;
             end 
             else begin
-			rx_data[9 - counter] <= MOSi;	 
+			rx_data[9 - counter] <= MOSI;	 
             counter <= 0;
             rx_valid <= 1; 
             end
@@ -111,12 +111,12 @@ always @(posedge sclk or negedge rst_n) begin
         end
 		if(cs == read_data)begin
 			if (counter < 9) begin
-				rx_data[9 - counter] <= MOSi;
+				rx_data[9 - counter] <= MOSI;
 				counter <= counter + 1;
 				rx_valid <= 0;
 			end
 			else begin 
-				rx_data[9 - counter] <= MOSi;
+				rx_data[9 - counter] <= MOSI;
 				counter <= 0;
 				rx_valid <= 1;
 				read_addr_flag <= 0;

@@ -40,7 +40,17 @@ spi_master #(.toggle_count(toggle_count)) S_M(
     .rx_data(rx_data)
 );
 
-wrapper_slave_ram #() W_S_R(
-
+wrapper_slave_ram #(
+    .DATA_WIDTH(DATA_WIDTH),
+    .MEM_DEPTH(MEM_DEPTH),
+    .ADDR_WIDTH(ADDR_WIDTH)
+) W_S_R(
+    //inputs from cpu
+    .rst_n(rst_n),
+    //internal wires with master
+    .sclk(sclk_out__sclk),
+    .SS_n(CS_n__SS_n),
+    .MOSI(MOSI__MOSI),
+    .MISO(MISO__MISO)
 );
 endmodule
